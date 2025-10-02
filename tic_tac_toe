@@ -1,0 +1,58 @@
+function tic_tac_toe()
+    clc;
+    disp('Welcome to the game bozos!');
+    while true
+        board = zeros(3, 3);
+        currentPlayer = 1; % Player 1 has the first move
+        gameOver = false;
+
+        while ~gameOver
+            displayBoard(board);
+            fprintf('Player %d, enter your move ([row, column]): ', currentPlayer); %prints out the text welcoming the player
+            move = input('');
+            row = move(1);
+            col = move(2);
+
+            if isValidMove(board, row, col)
+                board(row, col) = currentPlayer;
+                if checkWin(board, currentPlayer)
+                    displayBoard(board);
+                    fprintf('Player %d is just better!\n', currentPlayer);
+                    gameOver = true;
+                elseif all(board(:) ~= 0)
+                    displayBoard(board);
+                    fprintf('It''s a Tie!\n');
+                    gameOver = true;
+                else
+                    currentPlayer = 3 - currentPlayer; % Switch user
+                end
+            else
+                fprintf('Try again. Invalid Move\n');
+            end
+        end
+
+        replay = input('Play again? (yes/no): ', 's');
+        if lower(replay) ~= 'y'
+            break;
+        end
+    end
+    disp('Thank you for playing!');
+
+end
+
+function displayBoard(board)
+    disp('Current Board:');
+    symbols = [' '; 'X'; 'O'];
+    disp(symbols(board + 1));
+end
+
+function valid = isValidMove(board, row, col)
+    valid = row >= 1 && row <= 3 && col >= 1 && col <= 3 && board(row, col) == 0;
+end
+
+function win = checkWin(board, player)
+    win = any(all(board == player, 1)) || ... % Check columns
+          any(all(board == player, 2)) || ... % Check rows
+          all(diag(board) == player) || ...     % Check main diagonal
+          all(diag(flipud(board)) == player);  % Check opposite-diagonal
+end
